@@ -53,7 +53,7 @@ public class UdpHandler implements Runnable {
                 String response = null;
                 ServerEntity serverEntity = ServerManager.getInstance().getAvailableServer();
                 if (serverEntity != null) {
-                    logger.info("Sending request to server: " + serverEntity.getPort() + serverEntity.getAlive());
+                    logger.info("Sending request to server: " + serverEntity.getPort());
 
                     response = udpClient.sendRequest(request, serverEntity.getAddress(), serverEntity.getPort());
                 }else {

@@ -37,7 +37,7 @@ public class HeartBeat implements Runnable {
             String request = "get;" + entity.getAssociatedRoute() + "/health";
             response = client.sendRequest(request, entity.getAddress(), entity.getPort());
 
-            if (response.equals("500-ERROR")) {
+            if (response.equals("500 - ERROR")) {
                 if (lastState) {
                     String serverIsDown = "\u001B[34mServer " + entity.getPort() + " is down.\u001B[0m";
                     logger.info(serverIsDown);
@@ -54,7 +54,7 @@ public class HeartBeat implements Runnable {
             }
 
             try {
-                sleep(5000);
+                sleep(3000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

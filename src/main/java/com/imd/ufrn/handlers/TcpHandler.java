@@ -50,6 +50,7 @@ public class TcpHandler implements Runnable {
                 TcpClient client = new TcpClient();
                 ServerEntity serverEntity = ServerManager.getInstance().getAvailableServer();
                 if (serverEntity != null) {
+                    logger.info("Sending request to server: " + serverEntity.getPort() + serverEntity.getAlive());
                     response = client.sendRequest(request, serverEntity.getAddress(), serverEntity.getPort());
                 } else {
                     response = "500 - NO SERVERS AVAILABLE";

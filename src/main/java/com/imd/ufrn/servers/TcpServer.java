@@ -33,6 +33,8 @@ public class TcpServer extends Server {
             while (true) {
                 Socket socket = server.accept();
 
+                String info = "\u001B[34mTCP Client connected" + socket.getInetAddress().getHostAddress() + "\u001B[0m";
+                logger.info(info);
                 String clientAddress = socket.getInetAddress().getHostAddress();
                 int clientPort = socket.getPort();
 

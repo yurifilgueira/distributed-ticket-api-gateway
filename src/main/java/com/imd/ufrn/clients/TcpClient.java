@@ -18,9 +18,9 @@ public class TcpClient implements Client {
         try {
             socket = new Socket(address, port);
 
-            socket.setSoTimeout(3000);
+            socket.setSoTimeout(5000);
         }catch (Exception e) {
-            return "500-ERROR";
+            return "500 - ERROR";
         }
 
         try (
@@ -34,9 +34,13 @@ public class TcpClient implements Client {
 
             String response = bufferedReader.readLine();
 
+            if (response == null) {
+                return "500 - ERROR";
+            }
+
             return response;
         }catch (Exception e) {
-            return "500-ERROR";
+            return "500 - ERROR";
         }
         finally {
 
@@ -45,7 +49,7 @@ public class TcpClient implements Client {
                     socket.close();
                 }
             }catch (Exception e) {
-                throw new RuntimeException(e.getMessage());
+                return "500 - ERROR";
             }
         }
     }
