@@ -1,6 +1,8 @@
 package com.imd.ufrn.handlers;
 
 import com.imd.ufrn.clients.TcpClient;
+import com.imd.ufrn.heartbeat.ServerEntity;
+import com.imd.ufrn.servers.ServerManager;
 
 import java.io.*;
 import java.net.Socket;
@@ -29,7 +31,8 @@ public class TcpHandler implements Runnable {
             String request = bufferedReader.readLine();
 
             TcpClient client = new TcpClient();
-            String response = client.sendRequest(request, 8081);
+            ServerEntity serverEntity = ServerManager.getInstance().getAvailableServer();
+            String response = client.sendRequest(request, serverEntity.getAddress(), serverEntity.getPort());
 
             bufferedWriter.write(response);
             bufferedWriter.flush();

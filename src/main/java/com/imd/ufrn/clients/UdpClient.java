@@ -1,23 +1,25 @@
 package com.imd.ufrn.clients;
 
-import java.io.IOException;
+import com.imd.ufrn.heartbeat.ServerEntity;
+import com.imd.ufrn.servers.ServerManager;
+
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-public class UdpClient {
+public class UdpClient implements Client {
 
-    public String sendRequest(String request, int port) throws IOException {
-        DatagramSocket socket = new DatagramSocket();
+    @Override
+    public String sendRequest(String request, InetAddress address, int port) {
 
-        InetAddress localAddress = InetAddress.getByName("localhost");
+        try (DatagramSocket socket = new DatagramSocket()) {
 
-        byte[] buf = request.getBytes();
+            socket.setSoTimeout(3000);
 
-        DatagramPacket packet = new DatagramPacket(buf, buf.length, localAddress, port);
-        socket.send(packet);
+            byte[] buf = request.getBytes();
 
-        try {
+            DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port);
+            socket.send(packet);
 
             byte[] buffer = new byte[1024];
 
@@ -29,9 +31,7 @@ public class UdpClient {
 
             return response;
         }catch (Exception e) {
-            throw new IOException(e.getMessage());
-        } finally {
-            socket.close();
+            return null;
         }
     }
 

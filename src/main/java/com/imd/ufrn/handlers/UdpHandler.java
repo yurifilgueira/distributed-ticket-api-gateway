@@ -1,10 +1,13 @@
 package com.imd.ufrn.handlers;
 
 import com.imd.ufrn.clients.UdpClient;
+import com.imd.ufrn.heartbeat.ServerEntity;
+import com.imd.ufrn.servers.ServerManager;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.util.logging.Logger;
 
 public class UdpHandler implements Runnable {
@@ -29,9 +32,29 @@ public class UdpHandler implements Runnable {
 
             UdpClient udpClient = new UdpClient();
             String request = new String(packet.getData(), 0, packet.getLength());
-            String response = udpClient.sendRequest(request, 8081);
 
-            packet = new DatagramPacket(response.getBytes(), response.getBytes().length, packet.getAddress(), packet.getPort());
+            String[] tokens = request.split(";");
+
+            if (tokens[0].equals("/register")) {
+
+                ServerEntity entity = new ServerEntity("/tickets", packet.getAddress(), Integer.parseInt(tokens[1]), true);
+
+                if (ServerManager.getInstance().getServers().contains(entity)) {
+                    System.out.println("Server already exists");
+                }
+
+                ServerManager.getInstance().addServer(entity);
+
+                String response = "REGISTERED";
+                packet = new DatagramPacket(response.getBytes(), response.getBytes().length, packet.getAddress(), packet.getPort());
+            }
+            else {
+
+                ServerEntity serverEntity = ServerManager.getInstance().getAvailableServer();
+
+                String response = udpClient.sendRequest(request, serverEntity.getAddress(), serverEntity.getPort());
+                packet = new DatagramPacket(response.getBytes(), response.getBytes().length, packet.getAddress(), packet.getPort());
+            }
 
             socket.send(packet);
             logger.info("\u001B[32mResponse sent to the client\u001B[0m");

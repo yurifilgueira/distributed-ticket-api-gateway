@@ -1,5 +1,8 @@
 package com.imd.ufrn.clients;
 
+import com.imd.ufrn.heartbeat.ServerEntity;
+import com.imd.ufrn.servers.ServerManager;
+
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -7,14 +10,18 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
-public class TcpClient {
+public class TcpClient implements Client {
 
-    public String sendRequest(String request, int port) throws IOException {
+    public String sendRequest(String request, InetAddress address, int port) {
         Socket socket = null;
 
-        InetAddress address = InetAddress.getByName("localhost");
+        try {
+            socket = new Socket(address, port);
 
-        socket = new Socket(address, port);
+            socket.setSoTimeout(3000);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         try (
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
@@ -29,11 +36,16 @@ public class TcpClient {
 
             return response;
         }catch (Exception e) {
-            throw new IOException(e.getMessage());
+            return null;
         }
         finally {
-            if (socket != null && !socket.isClosed()) {
-                socket.close();
+
+            try {
+                if (socket != null && !socket.isClosed()) {
+                    socket.close();
+                }
+            }catch (Exception e) {
+                throw new RuntimeException(e.getMessage());
             }
         }
     }
