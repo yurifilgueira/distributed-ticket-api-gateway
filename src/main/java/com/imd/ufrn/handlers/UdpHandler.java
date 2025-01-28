@@ -50,9 +50,15 @@ public class UdpHandler implements Runnable {
             }
             else {
 
+                String response = null;
                 ServerEntity serverEntity = ServerManager.getInstance().getAvailableServer();
+                if (serverEntity != null) {
+                    logger.info("Sending request to server: " + serverEntity.getPort() + serverEntity.getAlive());
 
-                String response = udpClient.sendRequest(request, serverEntity.getAddress(), serverEntity.getPort());
+                    response = udpClient.sendRequest(request, serverEntity.getAddress(), serverEntity.getPort());
+                }else {
+                    response = "500 - NO SERVERS AVAILABLE";
+                }
                 packet = new DatagramPacket(response.getBytes(), response.getBytes().length, packet.getAddress(), packet.getPort());
             }
 

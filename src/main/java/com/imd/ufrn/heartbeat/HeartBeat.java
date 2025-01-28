@@ -32,14 +32,12 @@ public class HeartBeat implements Runnable {
 
         while (true) {
 
-            logger.info("\u001B[34mSending heartbeat...\u001B[0m");
-
             String response = null;
 
             String request = "get;" + entity.getAssociatedRoute() + "/health";
             response = client.sendRequest(request, entity.getAddress(), entity.getPort());
 
-            if (response == null) {
+            if (response.equals("500-ERROR")) {
                 if (lastState) {
                     String serverIsDown = "\u001B[34mServer " + entity.getPort() + " is down.\u001B[0m";
                     logger.info(serverIsDown);

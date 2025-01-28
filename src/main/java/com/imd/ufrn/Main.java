@@ -9,9 +9,9 @@ public class Main {
     public static void main(String[] args) {
         int port = Integer.parseInt(args[0]);
 
-        Server server = new UdpServer(port);
+        Server server = new TcpServer(port);
 
-        HeartBeatManager.getInstance().configureServer("udp");
+        HeartBeatManager.getInstance().configureServer("tcp");
 
         server.start();
     }

@@ -32,28 +32,24 @@ public class ServerManager {
     public ServerEntity getAvailableServer() {
         synchronized (this) {
             if (servers.isEmpty()) {
-                return null; // Nenhum servidor disponível
+                return null;
             }
 
-            int startIndex = idx; // Armazena o índice inicial para evitar loops infinitos
+            int startIndex = idx;
 
             do {
-                // Garantir que o índice seja cíclico
                 if (idx >= servers.size()) {
                     idx = 0;
                 }
 
-                // Escolher o servidor no índice atual
                 ServerEntity server = servers.get(idx);
                 idx++;
 
-                // Verificar se o servidor está ativo
                 if (server.getAlive()) {
-                    return server; // Retorna o servidor se estiver ativo
+                    return server;
                 }
-            } while (idx != startIndex); // Continua até que todos os servidores tenham sido verificados
+            } while (idx != startIndex);
 
-            // Se nenhum servidor ativo for encontrado, retorna null
             return null;
         }
     }

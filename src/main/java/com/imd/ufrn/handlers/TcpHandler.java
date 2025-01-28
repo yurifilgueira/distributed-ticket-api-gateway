@@ -5,6 +5,7 @@ import com.imd.ufrn.heartbeat.ServerEntity;
 import com.imd.ufrn.servers.ServerManager;
 
 import java.io.*;
+import java.net.DatagramPacket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
@@ -29,11 +30,31 @@ public class TcpHandler implements Runnable {
             logger.info("\u001B[34mDispatching request\u001B[0m");
 
             String request = bufferedReader.readLine();
+            String[] tokens = request.split(";");
 
-            TcpClient client = new TcpClient();
-            ServerEntity serverEntity = ServerManager.getInstance().getAvailableServer();
-            String response = client.sendRequest(request, serverEntity.getAddress(), serverEntity.getPort());
+            String response = null;
 
+            if (tokens[0].equals("/register")) {
+
+                ServerEntity entity = new ServerEntity("/tickets", socket.getInetAddress(), Integer.parseInt(tokens[1]), true);
+
+                if (ServerManager.getInstance().getServers().contains(entity)) {
+                    System.out.println("Server already exists");
+                }
+
+                ServerManager.getInstance().addServer(entity);
+
+                response = "REGISTERED";
+            }
+            else{
+                TcpClient client = new TcpClient();
+                ServerEntity serverEntity = ServerManager.getInstance().getAvailableServer();
+                if (serverEntity != null) {
+                    response = client.sendRequest(request, serverEntity.getAddress(), serverEntity.getPort());
+                } else {
+                    response = "500 - NO SERVERS AVAILABLE";
+                }
+            }
             bufferedWriter.write(response);
             bufferedWriter.flush();
             logger.info("\u001B[32mResponse sent to the client\u001B[0m");
